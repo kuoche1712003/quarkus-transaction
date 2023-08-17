@@ -7,8 +7,8 @@ import java.math.BigDecimal
 import javax.annotation.PostConstruct
 import javax.enterprise.context.ApplicationScoped
 
-@Startup
-@ApplicationScoped
+//@Startup
+//@ApplicationScoped
 class DataStartup(
     private val bioAccountRepository: BIOAccountRepository
 ) {

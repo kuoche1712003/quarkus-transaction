@@ -35,7 +35,6 @@ class EntityService(
         val entityId = ObjectId(id)
         entityRepository.findAndLock(entityId)
             ?: throw RuntimeException("entity not exist or lock")
-        versionRepository.delete("entityId = ?1", entityId).awaitSuspending()
         val version = Version(entityId = entityId, detail = "${Random.nextInt()}")
         versionRepository.persist(version).awaitSuspending()
         logger.info(version.detail)
@@ -52,8 +51,7 @@ class EntityService(
                 entityRepository.mongoCollection().findOneAndUpdate(it,
                     eq("_id", entityId),
                     inc("count", 1)
-                ).awaitSuspending()
-                versionRepository.delete("entityId = ?1", entityId).awaitSuspending()
+                ).awaitSuspending() ?: throw RuntimeException("entity not exist")
                 val version = Version(entityId = entityId, detail = "${Random.nextInt()}")
                 versionRepository.persist(version).awaitSuspending()
                 Uni.createFrom().publisher(it.commitTransaction()).awaitSuspending()
